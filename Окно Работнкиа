@@ -1,0 +1,135 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Runtime.InteropServices;
+using System.IO;
+using System.Threading;
+#pragma warning disable CS0618 // Тип или член устарел
+namespace Диплом
+{
+    public partial class Работа : Form
+    {
+        const int WM_NCLBUTTONDOWN = 0x00A1;
+        const int WM_NCHITTEST = 0x0084;
+        const int HTCAPTION = 2;
+        [DllImport("User32.dll")]
+        static extern int SendMessage(IntPtr hWnd,
+        int Msg, IntPtr wParam, IntPtr lParam);
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_NCLBUTTONDOWN)
+            {
+                int result = SendMessage(m.HWnd, WM_NCHITTEST,
+                IntPtr.Zero, m.LParam);
+                if (result == HTCAPTION)
+                    return;
+            }
+            base.WndProc(ref m);
+        }
+        public Thread ch;//создаем публичную переменную для потока
+        public Работа(int data)
+        {
+            TopMost = true;
+            InitializeComponent();
+            this.StartPosition = FormStartPosition.Manual;
+            this.Location = new Point(Screen.PrimaryScreen.Bounds.Width - this.Width,
+                Screen.PrimaryScreen.Bounds.Height - this.Height - 100);
+            this.rab = data;
+        }
+        string[] words;
+        public string a;
+        public int rab;
+        public int k=0;
+        public double tM;
+        public int s = 0, m = 30;
+        public void chan(object obj)//фунция потока
+        {
+            tM = tM * -1;//задаем счетчик
+            while (tM != -1)//цикл
+            {
+                this.Invoke(new Action(() => label1.Text =
+                new DateTime().AddSeconds(tM).ToShortTimeString()));//выводим сколько времени осталось
+                tM--; //минусуем счетчик
+                ((Thread)obj).Join(new TimeSpan(0, 0, 1));//приостановливаем поток на одну секудну
+            }
+            this.Invoke(new Action(() => button1.Enabled = true));//активируем кнопку
+        }
+
+        private void РаботуРаботаем_Load(object sender, EventArgs e)
+        {
+        DateTime locDat = DateTime.Now;
+        StreamWriter lg = new StreamWriter("logfiles.txt", true);
+        StreamReader sr = new StreamReader("Работники.txt");
+        while (!sr.EndOfStream)
+        {
+            a = sr.ReadLine();
+            words = a.Split(new char[] { '|' });
+            if (words[0] == Convert.ToString(rab))
+                break;
+        }
+        var cn = DateTime.Now;
+        var ck = DateTime.Parse(words[5]);
+        var co = cn - ck;
+        tM = co.TotalMinutes;
+        tM = tM * 60;
+        button1.Enabled = false;//делаем кнопку не аткивной
+        ch = new Thread(chan);//создаем сам поток
+        ch.Start(ch);//запускаем поток
+        lg.WriteLine(rab + "|Время запуска системы: " + locDat);
+        lg.Close();
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            DateTime locDat = DateTime.Now;
+            StreamWriter lg = new StreamWriter("logfiles.txt", true);
+            lg.WriteLine(rab + "|Время выхода из системы: " + locDat);
+            lg.Close();
+            Application.Exit();
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            DateTime locDat = DateTime.Now;
+            if (k > 0)
+            {
+                locDat = DateTime.Now;
+                StreamWriter lg = new StreamWriter("logfiles.txt", true);
+                lg.WriteLine(rab + "|Время выхода с перерыва: " + locDat);
+                lg.Close();
+                button2.Text = "Вы больше не можете выйти на перерыв";
+                button2.Enabled = false;
+                timer1.Stop();
+                return;
+            }
+            StreamWriter lgf = new StreamWriter("logfiles.txt", true);
+            lgf.WriteLine(rab + "|Время выхода на перерыв: " + locDat);
+            lgf.Close();
+            button2.Text = "Продолжить работу";
+            timer1.Start();
+            k++;
+        }
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            label3.Text = m + ":" + s;
+            s = s - 1;
+            if (s == -1)
+            {
+                m = m - 1;
+                s = 59;
+            }
+            if (m == 0 && s == 0)
+            {
+                MessageBox.Show("Время вышло!");
+                button2.Text = "Вы больше не можете выйти на перерыв";
+                button2.Enabled = false;
+                timer1.Stop();
+                ch.Resume();
+            }
+        }
+    }
+}
