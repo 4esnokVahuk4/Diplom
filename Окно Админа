@@ -1,0 +1,261 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Диплом
+{
+    public partial class adm : Form
+    {
+        public adm()
+        {
+            InitializeComponent();
+        }
+        public int j = 0;
+        public string[] arr = new string[1000];
+        public string path = "Работники.txt";
+        public int i = 0, lenght = 0, vi = 0, oi=0, MFI=0;
+        public string m = "";
+        void MF()
+        {
+            MFI = 0;
+            StreamReader sr = new StreamReader(path);
+            while (!sr.EndOfStream)
+            {
+                arr[MFI] = sr.ReadLine();
+                MFI++;
+            }
+            sr.Close();
+            lenght = MFI - 1;
+        }
+        void IZM()
+        {
+            string y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12, y13;
+            y1 = label8.Text;
+            y2 = textBox7.Text;
+            y3 = textBox8.Text;
+            y4 = textBox9.Text;
+            y5 = textBox10.Text;
+            y6 = textBox11.Text;
+            y7 = textBox12.Text;
+            y8 = textBox13.Text;
+            y9 = textBox14.Text;
+            y10 = textBox15.Text;
+            y11 = textBox16.Text;
+            y12 = textBox17.Text;
+            y13 = textBox18.Text;
+
+            StreamWriter srr = new StreamWriter(path);
+            arr[i] = y1 + "|" + y2 + "|" + y3 + "|" + y4 + "|" + y5 
+             + "|" + y6 + "|" + y7 + "|" + y8 + "|" + y9 + "|" + y10
+             + "|" + y11+ "|" + y12 +"|" + y13;
+
+            i = 0;
+            while (i <= lenght)
+            {
+                srr.WriteLine(arr[i]);
+                i++;
+            }
+            srr.Close();
+
+        }
+        void UDL()
+        {
+            arr[i] = null;
+            StreamWriter srr = new StreamWriter(path);
+            i = 0;
+            while (i <= lenght)
+            {
+                if (arr[i] == null)
+                    i++;
+                if (i > lenght)
+                    break;
+                srr.WriteLine(arr[i]);
+                i++;
+            }
+            srr.Close();
+        }
+        void BD() 
+        {
+            string a = arr[i];
+            string[] words;
+            string y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12, y13;
+            words = a.Split(new char[] { '|' });
+            m = words[0];
+            y1 = words[0];
+            y2 = words[1];
+            y3 = words[2];
+            y4 = words[3];
+            y5 = words[4];
+            y6 = words[5];
+            y7 = words[6];
+            y8 = words[7];
+            y9 = words[8];
+            y10 = words[9];
+            y11 = words[10];
+            y12 = words[11];
+            y13 = words[12];
+
+            label8.Text = y1;
+            textBox7.Text = y2;
+            textBox8.Text = y3;
+            textBox9.Text = y4;
+            textBox10.Text = y5;
+            textBox11.Text = y6;
+            textBox12.Text = y7;
+            textBox13.Text = y8;
+            textBox14.Text = y9;
+            textBox15.Text = y10;
+            textBox16.Text = y11;
+            textBox17.Text = y12;
+            textBox18.Text = y13;
+        }
+        private void adm_Load(object sender, EventArgs e)
+        {
+            MF();
+            BD();
+        }
+        private void Button1_Click(object sender, EventArgs e)
+        {
+                StreamReader sr = new StreamReader(path);
+                string[] words;
+                string a;
+                int ii = 0;
+                while (!sr.EndOfStream)
+                {
+                    a = sr.ReadLine();
+                    words = a.Split(new char[] { '|' });
+                    j = Convert.ToInt32(words[0])+1;
+                    string f1 = words[3];
+                    string f2 = words[4];
+                    string f3 = textBox2.Text;
+                    string f4 = textBox3.Text;
+                    if (f1 == f3 || f2 == f4)
+                    {
+                        MessageBox.Show("Такой работник уже есть!",
+                            "Сообщение", MessageBoxButtons.OK);
+                        ii++;
+                        break;
+                    }
+                }
+                sr.Close();
+                if (ii <= 0)
+                {
+                    StreamWriter srr = new StreamWriter(path, true);
+                    string ff1 = textBox1.Text;
+                    string ff2 = textBox2.Text;
+                    string ff3 = textBox3.Text;
+                    string ff4 = textBox4.Text;
+                    string ff5 = textBox5.Text;
+                byte d1, d2, d3, d4, d5, d6, d7;
+                    if (checkBox1.Checked == true)
+                        d1 = 1;
+                    else
+                        d1 = 0;
+                    if (checkBox2.Checked == true)
+                        d2 = 1;
+                    else
+                        d2 = 0;
+                    if (checkBox3.Checked == true)
+                        d3 = 1;
+                    else
+                        d3 = 0;
+                    if (checkBox4.Checked == true)
+                        d4 = 1;
+                    else
+                        d4 = 0;
+                    if (checkBox5.Checked == true)
+                        d5 = 1;
+                    else
+                        d5 = 0;
+                    if (checkBox6.Checked == true)
+                        d6 = 1;
+                    else
+                        d6 = 0;                    
+                    if (checkBox7.Checked == true)
+                        d7 = 1;
+                    else
+                        d7 = 0;
+
+                    srr.WriteLine(j + "|" + ff1 + "|" + ff2 + "|" + ff3
+                        + "|" + ff4 + "|" + ff5 + "|" + d1 +  "|" + d2 
+                        + "|" + d3 +  "|" + d4 +  "|" + d5 +  "|" + d6 + "|" + d7);
+                    MessageBox.Show("Успешное создание работника!",
+                        "Сообщение", MessageBoxButtons.OK);
+                    srr.Close();
+                    MF();
+            }
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            i++;
+            if (i > lenght)
+            {
+                button2.Enabled = false;
+                i--;
+                Thread.Sleep(1000);
+                button2.Enabled = true;
+            }
+            else
+            {
+                BD();
+            }
+            vi = i;
+        }
+        private void button3_Click(object sender, EventArgs e)
+        {
+            i--;
+            if (i < 0)
+            {
+                button3.Enabled = false;
+                i++;
+                Thread.Sleep(1000);
+                button3.Enabled = true;
+            }
+            else
+            {
+                BD();
+            }
+            vi = i;
+        }
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if((MessageBox.Show("Вы уверены что хотите выйти?",
+                "Подтвердите действие", MessageBoxButtons.YesNo) == DialogResult.Yes))
+                Application.Exit();
+        }
+        private void button5_Click(object sender, EventArgs e)
+        {
+            IZM();
+            MessageBox.Show("Данные успешно заменены!",
+                "Сообщение", MessageBoxButtons.OK);
+            MF();
+            i = vi;
+        }
+        private void button6_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Кнопка изменить - изменяет данные о сотруднике указаном в ячейках выше!"
+                + "\nКнопка Удалить - удаляет выбранного сотрудника!",
+                "Сообщение помощи", MessageBoxButtons.OK);
+        }
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if ((MessageBox.Show("Вы уверены что хотите удалить работника?",
+                "Подтвердите действие", MessageBoxButtons.YesNo) == DialogResult.Yes))
+            {
+                UDL();
+                MF();
+                i = vi;
+            }
+            MessageBox.Show("Сотрудник успешно удалён!",
+                "Сообщение", MessageBoxButtons.OK);
+        }
+    }
+}
