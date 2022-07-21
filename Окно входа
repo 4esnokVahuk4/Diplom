@@ -1,0 +1,105 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+
+namespace Диплом
+{
+    public partial class Вход : Form
+    {
+        public Вход()
+        {
+            InitializeComponent();
+        }
+        public int i = 0, j = 0;
+        public int rab;
+        private void button1_Click(object sender, EventArgs e)
+        {
+            StreamReader sr = new StreamReader("Работники.txt");
+            string[] words;
+            string a;
+            while (!sr.EndOfStream)
+            {
+                a = sr.ReadLine();
+                words = a.Split(new char[] { '|' });
+                string im = words[1];
+                string f1 = words[2];
+                string f2 = words[3];
+                string f3 = textBox1.Text;
+                string f4 = textBox2.Text;
+                if (f3 == "A" && f4 == "A")
+                {
+                    MessageBox.Show("Добро пожаловать Администратор!",
+                        "Сообщение", MessageBoxButtons.OK);
+                    i++;
+                    j = 0;
+                    this.WindowState = FormWindowState.Minimized;
+                    adm adm = new adm();
+                    adm.Show(this);
+                    break;
+                }
+                if (f3 == f1 && f4 == f2)
+                {
+                    rab = Convert.ToInt32(words[0]);
+                    Работа f = new Работа(rab);
+                    var LD = DateTime.Now;
+                    var cn = DateTime.Parse(words[4]);
+                    var ck = DateTime.Parse(words[5]);
+                    var co = LD - ck;
+                    var vo = LD - cn;
+                    i++;
+                    if (LD > ck)
+                    {
+                        MessageBox.Show(im + " Сейчас не ваша смена!",
+                            "Сообщение", MessageBoxButtons.OK);
+                        //System.Diagnostics.Process.Start("shutdown", "/s /t /f 00");
+                        Application.Exit();
+                    }
+                    if (LD > cn.AddMinutes(5) && LD < ck)
+                    {
+                        MessageBox.Show(im + " Вы опоздали на " + vo.ToString("hh':'mm") 
+                            + " часов и минут!" + "\nСегодня вы работаете " + co.ToString("hh':'mm") 
+                            + " часов и минут!", "Сообщение", MessageBoxButtons.OK);
+                        i++;
+                        j = 0;
+                        this.WindowState = FormWindowState.Minimized;
+                        f.ShowDialog();
+                        break;
+                    }
+                    MessageBox.Show("Успешной работы " + im + 
+                        "!" +"\nСегодня вы работаете "+ co + " часов!",
+                        "Сообщение",
+                        MessageBoxButtons.OK);
+                    j = 0;
+                    this.WindowState = FormWindowState.Minimized;
+                    f.ShowDialog();
+                    break;
+                }
+            }
+            if (i > 0)
+            {
+                i = 0;
+            }
+            else
+            {
+                j++;
+                if (j >= 5)
+                {
+                    MessageBox.Show("Блокировка входа!", "Сообщение", MessageBoxButtons.OK);
+                    System.Diagnostics.Process.Start("shutdown", "/s /t /f 00");
+                }
+                MessageBox.Show("Неверный логин или пароль!", "Сообщение", MessageBoxButtons.OK);
+
+            }
+            sr.Close();
+        }
+    }
+}
